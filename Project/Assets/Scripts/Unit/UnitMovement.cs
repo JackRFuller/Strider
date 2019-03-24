@@ -47,6 +47,7 @@ public class UnitMovement : UnitBehaviour
         
         gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 
+        m_unitMovementGuide.EnableMovementGuide();
         m_unitCollider.enabled = false;
         Cursor.visible = false;
         this.enabled = true;
@@ -58,6 +59,9 @@ public class UnitMovement : UnitBehaviour
         Ray ray = m_playerCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
+        bool isValidPath = false;
+        bool isValidPoint = false;
+
         if(Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
             if(hit.collider.CompareTag("Ground"))
@@ -67,8 +71,11 @@ public class UnitMovement : UnitBehaviour
 
                 NavMesh.CalculatePath(m_originalPosition, targetPosition, NavMesh.AllAreas, m_navMeshPath);
 
+                isValidPoint = IsValidSpot(targetPosition);
+                isValidPath = IsValidPath(targetPosition);
+
                 //Determine if valid path
-                if(IsValidPath(targetPosition) && IsValidSpot(targetPosition))
+                if(isValidPoint && isValidPath)
                 {   
                     if (Input.GetMouseButtonDown(0))
                     {
@@ -77,6 +84,8 @@ public class UnitMovement : UnitBehaviour
                 }                
             }
         }
+
+        m_unitMovementGuide.SetNavPathVisual(m_navMeshPath, isValidPath, isValidPoint);
     }
 
     private Vector3 GetHoverPosition(Vector3 hitPoint)
@@ -150,6 +159,7 @@ public class UnitMovement : UnitBehaviour
 
     private void ResetUnitAfterCancelledOrCompletedMove()
     {
+        m_unitMovementGuide.DisableMovementGuide();
         gameObject.layer = LayerMask.NameToLayer("Unit");
         Cursor.visible = true;
         this.enabled = false;
