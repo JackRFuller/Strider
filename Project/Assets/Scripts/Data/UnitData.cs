@@ -11,4 +11,10 @@ public class UnitData : ScriptableObject
     public int healthPoints = 1;
 
     public float maxMovementDistancePerTurn;
+
+    [Header("Field of View")]
+    public float viewRadius;
+    [Range(0,361)]
+    public float viewAngle;
+    public Material fieldOfViewMaterial;
 }

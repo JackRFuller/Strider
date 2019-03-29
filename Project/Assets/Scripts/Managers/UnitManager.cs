@@ -5,19 +5,22 @@ using System;
 
 public class UnitManager : MonoBehaviour
 {
+    public Action UnitStartedMovement;
+    public Action UnitEndedMovement;
+
     [SerializeField]
     private GameObject m_unitMovementGuidePrefab;
 
-    private static List<UnitView> units;
+    private static List<UnitView> m_units;
     private static UnitMovementGuide m_unitMovementGuide;
 
    
-    public static List<UnitView> Units { get { return units; } }
+    public static List<UnitView> Units { get { return m_units; } }
     public static UnitMovementGuide UnitMovementGuide { get { return m_unitMovementGuide; } }
 
     private void Awake()
     {
-        units = new List<UnitView>();
+        m_units = new List<UnitView>();
     }
 
     private void Start()
@@ -28,6 +31,19 @@ public class UnitManager : MonoBehaviour
 
     public static void AddUnit(UnitView unit)
     {
-        units.Add(unit);
+        m_units.Add(unit);
     }
+
+    public void UnitStartedMoving()
+    {
+        if (UnitStartedMovement != null)
+            UnitStartedMovement.Invoke();
+    }
+
+    public void UnitStoppedMoving()
+    {
+        if (UnitEndedMovement != null)
+            UnitEndedMovement.Invoke();
+    }
+
 }
