@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
-public class UnitMovement : UnitBehaviour
+public class UnitMovement : UnitComponent
 {
+    public Action UnitMoved;
+
     private Action m_unitMovementComplete;
     private Action m_unitMovementCancelled;
 
@@ -51,6 +53,8 @@ public class UnitMovement : UnitBehaviour
         m_unitCollider.enabled = false;
         Cursor.visible = false;
         this.enabled = true;
+
+        GameManager.Instance.UnitManager.UnitStartedMoving();
     }
 
    
@@ -142,6 +146,9 @@ public class UnitMovement : UnitBehaviour
 
         if (m_unitMovementComplete != null)
             m_unitMovementComplete.Invoke();
+
+        if (UnitMoved != null)
+            UnitMoved.Invoke();
     }
 
     private void CancelMove()
@@ -159,8 +166,12 @@ public class UnitMovement : UnitBehaviour
 
     private void ResetUnitAfterCancelledOrCompletedMove()
     {
+        GameManager.Instance.UnitManager.UnitStoppedMoving();
+
         m_unitMovementGuide.DisableMovementGuide();
         gameObject.layer = LayerMask.NameToLayer("Unit");
+
+        m_unitCollider.enabled = true;
         Cursor.visible = true;
         this.enabled = false;
     }

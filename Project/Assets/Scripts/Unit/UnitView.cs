@@ -12,11 +12,15 @@ public class UnitView : MonoBehaviour
     private PhotonView m_photonView;
     private UnitBehaviour m_unitBehaviour;
     private UnitMovement m_unitMovement;
+    private UnitShooting m_unitShooting;
+    private UnitFieldOfView m_unitFieldOfView;
 
     public UnitData UnitData { get { return m_unitData; } }
-    public PhotonView photonView { get { return m_photonView; } }
+    public PhotonView PhotonView { get { return m_photonView; } }
     public UnitBehaviour UnitBehaviour { get { return m_unitBehaviour; } }
     public UnitMovement UnitMovement { get { return m_unitMovement; } }
+    public UnitShooting UnitShooting { get { return m_unitShooting; } }
+    public UnitFieldOfView UnitFieldOfView { get { return m_unitFieldOfView; } }
 
     public PlayerView PlayerView { get { return m_playerView; } }
 
@@ -25,11 +29,16 @@ public class UnitView : MonoBehaviour
         m_photonView = GetComponent<PhotonView>();
         m_unitBehaviour = GetComponent<UnitBehaviour>();
         m_unitMovement = GetComponent<UnitMovement>();
+        m_unitShooting = GetComponent<UnitShooting>();
+        m_unitFieldOfView = GetComponent<UnitFieldOfView>();
     }
 
     private void Start()
     {
         UnitManager.AddUnit(this);
+
+        if (!m_photonView.isMine)
+            this.gameObject.tag = "EnemyUnit";
     }
 
     public void SetPlayerView(PlayerView playerView)

@@ -15,6 +15,8 @@ public class UnitBehaviour : UnitComponent
     {
         base.Start();
 
+        GameManager.Instance.TurnManager.TurnPhaseUpdated += SetTurnAction;
+
         SetTurnAction();
     }
 
@@ -24,6 +26,9 @@ public class UnitBehaviour : UnitComponent
         {
             case TurnManager.TurnPhase.Movement:
                 m_unitTurn = m_unitView.UnitMovement.StartUnitMovement;
+                break;
+            case TurnManager.TurnPhase.Shooting:
+                m_unitTurn = m_unitView.UnitShooting.StartUnitShooting;
                 break;
         }
     }

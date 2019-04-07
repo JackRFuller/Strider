@@ -5,18 +5,18 @@ using System;
 
 public class UnitManager : MonoBehaviour
 {
-    public Action UnitStartedMovement;
-    public Action UnitEndedMovement;
-
-    [SerializeField]
-    private GameObject m_unitMovementGuidePrefab;
+    [SerializeField] private GameObject m_unitMovementGuidePrefab;
+    [SerializeField] private GameObject m_unitShootingGuidePrefab;
 
     private static List<UnitView> m_units;
+
     private static UnitMovementGuide m_unitMovementGuide;
+    private static UnitShootingGuide m_unitShootingGuide;
 
    
     public static List<UnitView> Units { get { return m_units; } }
     public static UnitMovementGuide UnitMovementGuide { get { return m_unitMovementGuide; } }
+    public static UnitShootingGuide UnitShootingGuide { get { return m_unitShootingGuide; } }
 
     private void Awake()
     {
@@ -27,6 +27,9 @@ public class UnitManager : MonoBehaviour
     {
         GameObject movementGuide = Instantiate(m_unitMovementGuidePrefab);
         m_unitMovementGuide = movementGuide.GetComponent<UnitMovementGuide>();
+
+        GameObject shootingGuide = Instantiate(m_unitShootingGuidePrefab);
+        m_unitShootingGuide = shootingGuide.GetComponent<UnitShootingGuide>();
     }
 
     public static void AddUnit(UnitView unit)
@@ -34,16 +37,28 @@ public class UnitManager : MonoBehaviour
         m_units.Add(unit);
     }
 
+    //Called from Unit
     public void UnitStartedMoving()
     {
-        if (UnitStartedMovement != null)
-            UnitStartedMovement.Invoke();
+        for (int unit = 0; unit < m_units.Count; unit++)
+        {
+            if(!m_units[unit].PhotonView.isMine)
+            {
+                m_units[unit].UnitFieldOfView.EnableFieldOfView();
+            }
+        }       
     }
 
+    //Called from Unit
     public void UnitStoppedMoving()
     {
-        if (UnitEndedMovement != null)
-            UnitEndedMovement.Invoke();
+        for (int unit = 0; unit < m_units.Count; unit++)
+        {
+            if (!m_units[unit].PhotonView.isMine)
+            {
+                m_units[unit].UnitFieldOfView.DisableFieldOfView();
+            }
+        }
     }
 
 }

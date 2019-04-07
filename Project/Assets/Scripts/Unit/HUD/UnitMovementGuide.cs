@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System;
 
 public class UnitMovementGuide : MonoBehaviour
 {
@@ -72,7 +73,7 @@ public class UnitMovementGuide : MonoBehaviour
 
         for (int spriteRenderer = 0; spriteRenderer < m_spriteRenderers.Length; spriteRenderer++)
         {
-            m_spriteRenderers[spriteRenderer].color = (isValidPath && isValidSpot) ? Color.white : Color.red;
+            m_spriteRenderers[spriteRenderer].color = (isValidPath && isValidSpot) ? Color.blue : Color.red;
         }
 
         

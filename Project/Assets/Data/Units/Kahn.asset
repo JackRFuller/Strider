@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Kahn
   healthPoints: 1
-  maxMovementDistancePerTurn: 6
-  viewRadius: 2.5
+  strength: 3
+  defense: 3
+  shootingSkill: 6
+  maxMovementDistancePerTurn: 100
+  viewRadius: 2
   viewAngle: 360
   fieldOfViewMaterial: {fileID: 2100000, guid: 843cdf2d4c9683148adbbcba4b24eccc, type: 2}
+  rangedWeapon: {fileID: 11400000, guid: fe9549ef795e4414099ef0ba80896ab6, type: 2}

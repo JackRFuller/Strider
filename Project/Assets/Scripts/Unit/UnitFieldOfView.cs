@@ -18,12 +18,14 @@ public class UnitFieldOfView : UnitComponent
     private Mesh m_viewMesh;
 
     //For Editor
-    public float ViewRadius { get { return m_unitView.UnitData.viewRadius; } }
-    public float ViewAngle { get { return m_unitView.UnitData.viewAngle; } }
+    public float ViewRadius { get { return m_viewRadius; } }
+    public float ViewAngle { get { return m_viewAngle; } }
 
     protected override void Start()
     {
         base.Start();
+
+        m_unitView.UnitMovement.UnitMoved += DetectEnemyUnits;
 
         m_viewRadius = m_unitView.UnitData.viewRadius;
         m_viewAngle = m_unitView.UnitData.viewAngle;
@@ -42,16 +44,16 @@ public class UnitFieldOfView : UnitComponent
 
         m_viewMesh = new Mesh();
         m_viewMeshFilter.mesh = m_viewMesh;
-    }
 
-    private void Update()
-    {
         DrawFieldOfView();
-    }
+        DisableFieldOfView();
+    }    
 
-    private void FindVisibleTargets()
+    private void DetectEnemyUnits()
     {
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, m_viewRadius, m_targetMask);
+
+        List<UnitView> enemies = new List<UnitView>();
 
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
@@ -64,9 +66,20 @@ public class UnitFieldOfView : UnitComponent
 
                 if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, m_obstacleMask))
                 {
-                    //Logic for having found a target
+                    UnitView unit = targetsInViewRadius[i].GetComponent<UnitView>();
+                    
+                    if(!unit.PhotonView.isMine)
+                    {
+                        enemies.Add(unit);                        
+                    }
                 }
             }
+        }
+
+        //Send Combat Encounter To Combat Manager
+        if(enemies.Count != 0)
+        {
+            GameManager.Instance.CombatManager.CreateCombatEncounter(m_unitView, enemies);
         }
     }
 
@@ -128,6 +141,16 @@ public class UnitFieldOfView : UnitComponent
         m_viewMesh.vertices = vertices;
         m_viewMesh.triangles = triangles;
         m_viewMesh.RecalculateNormals();
+    }
+
+    public void EnableFieldOfView()
+    {
+        m_meshRenderer.enabled = true;
+    }
+
+    public void DisableFieldOfView()
+    {
+        m_meshRenderer.enabled = false;
     }
 
     EdgeInfo FindEdge(ViewCastInfo minViewCast, ViewCastInfo maxViewCast)
