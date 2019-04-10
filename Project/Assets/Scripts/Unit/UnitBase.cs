@@ -13,12 +13,17 @@ public class UnitBase : UnitComponent
     {
         base.Start();
 
-        SetBaseColour();
+        //SetBaseColour();
     }
 
     private void SetBaseColour()
     {
         if (!m_unitView.PhotonView.isMine)
             m_unitBase.material = m_enemyBaseMaterial;
+    }
+
+    public void SetBaseColourRed()
+    {
+        m_unitBase.material = m_enemyBaseMaterial;
     }
 }

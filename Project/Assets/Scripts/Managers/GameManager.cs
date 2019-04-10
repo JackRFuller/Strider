@@ -12,12 +12,14 @@ public class GameManager : MonoBehaviour
     private UnitManager m_unitManager;
     private CombatManager m_combatManager;
     private DiceManager m_diceManager;
+    private UnitAIManager m_unitAIManager;
 
     public TurnManager TurnManager { get { return m_turnManager; } }
     public PhotonView PhotonView { get { return m_photonView; } }
     public UnitManager UnitManager { get { return m_unitManager; } }
     public CombatManager CombatManager { get { return m_combatManager; } }
     public DiceManager DiceManager { get { return m_diceManager; } }
+    public UnitAIManager UnitAIManager { get { return m_unitAIManager; } }
 
     private void Awake()
     {
@@ -25,15 +27,18 @@ public class GameManager : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
         m_photonView = GetComponent<PhotonView>();
         m_turnManager = GetComponent<TurnManager>();
         m_unitManager = GetComponent<UnitManager>();
         m_combatManager = GetComponent<CombatManager>();
         m_diceManager = GetComponent<DiceManager>();
+        m_unitAIManager = GetComponent<UnitAIManager>();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+     
     }
 }

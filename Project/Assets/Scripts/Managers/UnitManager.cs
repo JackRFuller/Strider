@@ -42,7 +42,7 @@ public class UnitManager : MonoBehaviour
     {
         for (int unit = 0; unit < m_units.Count; unit++)
         {
-            if(!m_units[unit].PhotonView.isMine)
+            if(m_units[unit].CompareTag("EnemyUnit"))
             {
                 m_units[unit].UnitFieldOfView.EnableFieldOfView();
             }
@@ -54,7 +54,7 @@ public class UnitManager : MonoBehaviour
     {
         for (int unit = 0; unit < m_units.Count; unit++)
         {
-            if (!m_units[unit].PhotonView.isMine)
+            if (m_units[unit].CompareTag("EnemyUnit"))
             {
                 m_units[unit].UnitFieldOfView.DisableFieldOfView();
             }

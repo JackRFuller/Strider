@@ -19,8 +19,8 @@ public class PlayerView : MonoBehaviour
         m_photonView = GetComponent<PhotonView>();
         m_playerCameraMovement = GetComponent<RTS_Camera>();
 
-        if (!m_photonView.isMine)
-            DisablePlayerComponents();
+        //if (!m_photonView.isMine)
+        //    DisablePlayerComponents();
     }
 
     private void DisablePlayerComponents()
