@@ -17,7 +17,7 @@ MonoBehaviour:
   strength: 3
   defense: 3
   shootingSkill: 6
-  maxMovementDistancePerTurn: 100
+  maxMovementDistancePerTurn: 50
   viewRadius: 2
   viewAngle: 360
   fieldOfViewMaterial: {fileID: 2100000, guid: 843cdf2d4c9683148adbbcba4b24eccc, type: 2}

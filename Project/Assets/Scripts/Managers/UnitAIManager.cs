@@ -31,7 +31,7 @@ public class UnitAIManager : MonoBehaviour
 
     void InitiateTurn()
     {
-        if(unitIndex < m_aiUnits.Count)
+        if(unitIndex < m_aiUnits.Count - 1)
         {
             unitIndex++;
             m_aiUnits[unitIndex].UnitAIBehaviour.StartTurnAction(m_unitTurnFinished);

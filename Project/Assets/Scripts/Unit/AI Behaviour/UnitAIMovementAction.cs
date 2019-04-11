@@ -34,29 +34,110 @@ public class UnitAIMovementAction : UnitAIAction
 
         m_targetUnit = m_unitView.UnitAIBehaviour.PrimaryTargetUnit;
 
-        if(IsThereAValidPathToTarget())
+        switch (m_unitView.UnitAIBehaviour.AIType)
         {
-            Debug.Log("Found Valid Path");
-
-            if (IsTargetInRange())
-            {
-                Vector3 targetPosition = GetValidMovementPosition(m_targetUnit.transform.position);
-
-                m_navAgent.destination = targetPosition;
-                this.enabled = true;
-            }
-            else
-            {
-                //Get as Close As Possible
-            }
-        }
-        else
-        {
-
+            case UnitAIBehaviour.AIBehaviourType.Aggressive:
+                AggressiveMove();
+                break;
+            case UnitAIBehaviour.AIBehaviourType.Defensive:
+                DefensiveMove();
+                break;
         }
     }
 
-    private bool IsTargetInRange()
+    private void AggressiveMove()
+    {
+        Vector3 targetPosition = Vector3.zero;
+
+        targetPosition = GetClosestPositionToTargetUnit(m_targetUnit.transform.position);        
+
+        Debug.Log("Target unit Pos:" + m_targetUnit.transform.position + "Target Pos" + targetPosition,m_targetUnit.gameObject);
+
+        if(targetPosition != Vector3.zero)
+        {
+            m_navAgent.destination = targetPosition;
+            this.enabled = true;
+        }
+        else
+        {
+            if (m_actionFinished != null)
+                m_actionFinished.Invoke();
+        }
+    }
+
+    private void DefensiveMove()
+    {
+        //Can Target Reach me            
+
+        //If So Try and Move Out of Way
+
+        //Can we move to somewhere in range
+
+        //If not calculate area 
+
+        if (m_actionFinished != null)
+            m_actionFinished.Invoke();
+    } 
+
+    private void GetFurthestDistanceAwayFromTargetUnit()
+    {
+        
+    }
+
+    private Vector3 GetClosestPositionToTargetUnit(Vector3 targetPosition)
+    {
+        int xBounds = 0;
+        int zBounds = 0;
+
+        for (int i = 0; i < BoardManager.Rows * BoardManager.Columns;i++)
+        {           
+            xBounds++;
+            zBounds++;
+           
+            for (int z = zBounds; z > -zBounds; z--)
+            {
+                for (int x = xBounds; x > -xBounds; x--)
+                {
+                    Vector3 movePosition = new Vector3(targetPosition.x + x, 0, targetPosition.z + z);                                      
+
+                    //Check We're On The Board
+                    if (IsPositionWithinConfinesOfTheBoard(movePosition))
+                    {                        
+                        //Check There is A Valid Path
+                        if (IsThereAValidPathBetweenUnitAndTarget(movePosition))
+                        {
+                            //Check it's withing range
+                            if (IsTargetWithinMovementRange())
+                            {
+                                //Check There's Nothing Already There
+                                if (IsPositionClear(movePosition))
+                                {
+                                    //Check There
+                                    return movePosition;
+                                }
+                            }
+                        }                        
+                    }
+                }
+            }
+        }       
+
+        return Vector3.zero;
+    }
+
+    private bool IsThereAValidPathBetweenUnitAndTarget(Vector3 targetPosition)
+    {
+        NavMesh.CalculatePath(transform.position, targetPosition, NavMesh.AllAreas, m_navPath);
+
+        if (m_navPath.status != NavMeshPathStatus.PathInvalid)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsTargetWithinMovementRange()
     {
         float pathLength = 0;
 
@@ -71,66 +152,37 @@ public class UnitAIMovementAction : UnitAIAction
             return false;
     }
 
-    private bool IsThereAValidPathToTarget()
+    private bool IsPositionClear(Vector3 targetPosition)
     {
-        NavMesh.CalculatePath(transform.position, m_unitView.transform.position, NavMesh.AllAreas, m_navPath);
+        Collider[] hitColliders = Physics.OverlapSphere(targetPosition, 0.5f);
 
-        if(m_navPath.status == NavMeshPathStatus.PathInvalid)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
+        bool spotIsClear = true;
 
-    private Vector3 GetValidMovementPosition(Vector3 targetPosition)
-    {
-        Vector3 movementPosition = targetPosition;
-
-        for (int x = -1; x < 1; x++)
+        for (int i = 0; i < hitColliders.Length; i++)
         {
-            for(int y = -1; y < 1; y++)
+            if (hitColliders[i].gameObject.name != "Ground")
             {
-                movementPosition = new Vector3(targetPosition.x + x, 0, targetPosition.z + y);
-
-                if(movementPosition.x != targetPosition.x && movementPosition.z != targetPosition.z)
-                {
-                    Collider[] hitColliders = Physics.OverlapSphere(movementPosition, 0.5f);
-
-                    bool objectInTheWay = false;
-
-                    for (int i = 0; i < hitColliders.Length; i++)
-                    {
-                        if (hitColliders[i].gameObject.name != "Ground")
-                        {
-                            objectInTheWay = true;
-                            Debug.Log("Hit " + hitColliders[i].gameObject.name);
-                            break;
-                        }
-                    }
-
-                    if (!objectInTheWay)
-                    {
-                        return movementPosition;
-                    }
-                }
+                spotIsClear = false;
             }
         }
 
-        return movementPosition;
+        return spotIsClear;
     }
 
     private void CheckUnitHasReachedTheirDestination()
     {
-        if(!m_navAgent.pathPending)
+        for (int i = 0; i < m_navPath.corners.Length - 1; i++)
+        {
+            Debug.DrawLine(m_navPath.corners[i], m_navPath.corners[i + 1], Color.red);
+        }
+
+        if (!m_navAgent.pathPending)
         {
             if(m_navAgent.remainingDistance <= m_navAgent.stoppingDistance)
             {
                 if(!m_navAgent.hasPath || m_navAgent.velocity.sqrMagnitude == 0f)
                 {
-                    Debug.Log("Reached Destination");
+                    Debug.Log("Reached Destination");  
 
                     if (m_actionFinished != null)
                         m_actionFinished.Invoke();
@@ -139,5 +191,18 @@ public class UnitAIMovementAction : UnitAIAction
                 }
             }
         }
+    }
+
+    private bool IsPositionWithinConfinesOfTheBoard(Vector3 position)
+    {
+        if(position.x >= 0 && position.x <= BoardManager.Columns)
+        {
+            if(position.z >= 0 && position.z <= BoardManager.Rows)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

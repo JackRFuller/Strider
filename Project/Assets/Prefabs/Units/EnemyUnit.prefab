@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 1833607597113908145}
   - component: {fileID: 713715581524568981}
   m_Layer: 10
-  m_Name: PlayerUnit
+  m_Name: EnemyUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -130,9 +130,8 @@ Transform:
   m_LocalPosition: {x: 21.13717, y: 3.1572045e-17, z: 10.7343645}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8885322635155701603}
-  - {fileID: 3355418184280080345}
   - {fileID: 7655544907847169691}
+  - {fileID: 3355418184280080345}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -148,7 +147,7 @@ NavMeshAgent:
   m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 8
-  avoidancePriority: 50
+  avoidancePriority: 99
   m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
@@ -1315,12 +1314,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3482617307523980117}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.66, z: 0.26}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.581, z: 0.26000023}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 5357811310398241581}
-  m_RootOrder: 0
+  m_Father: {fileID: 7655544907847169691}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3520281402109958687
 GameObject:
@@ -1787,8 +1786,9 @@ Transform:
   - {fileID: 7060899901469995311}
   - {fileID: 5877514468306883211}
   - {fileID: 3785694476923732929}
+  - {fileID: 8885322635155701603}
   m_Father: {fileID: 5357811310398241581}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &6806529034963813885
 Animator:

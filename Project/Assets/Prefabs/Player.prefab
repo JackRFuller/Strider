@@ -172,8 +172,8 @@ MonoBehaviour:
   keyboardZoomingSensitivity: 2
   scrollWheelZoomingSensitivity: -25
   limitMap: 1
-  limitX: 20
-  limitY: 20
+  limitX: 50
+  limitY: 50
   targetFollow: {fileID: 0}
   targetOffset: {x: 0, y: 0, z: 0}
   useScreenEdgeInput: 0

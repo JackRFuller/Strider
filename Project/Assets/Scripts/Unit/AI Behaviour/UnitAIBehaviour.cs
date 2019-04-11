@@ -11,6 +11,15 @@ public class UnitAIBehaviour : UnitComponent
     private UnitView m_primaryTargetUnit;
 
     public UnitView PrimaryTargetUnit { get { return m_primaryTargetUnit; } }
+
+    private AIBehaviourType m_aiBehaviour;
+    public AIBehaviourType AIType { get { return m_aiBehaviour; } }
+
+    public enum AIBehaviourType
+    {
+        Aggressive = 0,
+        Defensive,
+    }
     
     protected override void Start()
     {
@@ -18,6 +27,12 @@ public class UnitAIBehaviour : UnitComponent
 
         SetTurnAction();
         AssignTarget();
+    }
+
+    private void AssignAIBehaviour()
+    {
+        int aiType = UnityEngine.Random.Range(0, 2);
+        m_aiBehaviour = aiType == 0 ? AIBehaviourType.Aggressive : AIBehaviourType.Defensive;
     }
 
     private void AssignTarget()
