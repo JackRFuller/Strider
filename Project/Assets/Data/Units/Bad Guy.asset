@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 958ac25de1e1f8e45beee318e5093832, type: 3}
+  m_Name: Bad Guy
+  m_EditorClassIdentifier: 
+  unitName: Kahn
+  healthPoints: 1
+  strength: 3
+  defense: 3
+  shootingSkill: 6
+  unitBaseRadius: 0
+  maxMovementDistancePerTurn: 18
+  unitModel: {fileID: 1225176256878213597, guid: 7e6e119bc5019b849b770c05bfebf977,
+    type: 3}
+  viewRadius: 2
+  viewAngle: 360
+  fieldOfViewMaterial: {fileID: 2100000, guid: 843cdf2d4c9683148adbbcba4b24eccc, type: 2}
+  rangedWeapon: {fileID: 11400000, guid: fe9549ef795e4414099ef0ba80896ab6, type: 2}

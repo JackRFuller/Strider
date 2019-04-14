@@ -42,6 +42,12 @@ public class UnitView : MonoBehaviour
         m_unitMovement = GetComponent<UnitMovement>();
         m_unitShooting = GetComponent<UnitShooting>();
         m_unitFieldOfView = GetComponent<UnitFieldOfView>();
+
+        //Spawn in Model
+        GameObject unitModel = Instantiate(UnitData.unitModel);
+        unitModel.transform.parent = this.transform;
+        unitModel.transform.localPosition = new Vector3(0, 0.1f, 0);
+        unitModel.transform.rotation = transform.rotation;
     }
 
     private void Start()

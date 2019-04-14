@@ -32,7 +32,7 @@ public class UnitAIBehaviour : UnitComponent
     private void AssignAIBehaviour()
     {
         int aiType = UnityEngine.Random.Range(0, 2);
-        m_aiBehaviour = aiType == 0 ? AIBehaviourType.Aggressive : AIBehaviourType.Defensive;
+        m_aiBehaviour = aiType == 0 ? AIBehaviourType.Aggressive : AIBehaviourType.Aggressive;
     }
 
     private void AssignTarget()

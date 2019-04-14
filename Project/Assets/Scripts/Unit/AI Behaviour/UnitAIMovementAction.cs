@@ -47,22 +47,10 @@ public class UnitAIMovementAction : UnitAIAction
 
     private void AggressiveMove()
     {
-        Vector3 targetPosition = Vector3.zero;
+        Vector3 targetPosition = GetClosestPositionToTargetUnit(m_targetUnit.transform.position); 
 
-        targetPosition = GetClosestPositionToTargetUnit(m_targetUnit.transform.position);        
-
-        Debug.Log("Target unit Pos:" + m_targetUnit.transform.position + "Target Pos" + targetPosition,m_targetUnit.gameObject);
-
-        if(targetPosition != Vector3.zero)
-        {
-            m_navAgent.destination = targetPosition;
-            this.enabled = true;
-        }
-        else
-        {
-            if (m_actionFinished != null)
-                m_actionFinished.Invoke();
-        }
+        m_navAgent.destination = targetPosition;
+        this.enabled = true;
     }
 
     private void DefensiveMove()
@@ -82,59 +70,126 @@ public class UnitAIMovementAction : UnitAIAction
     private void GetFurthestDistanceAwayFromTargetUnit()
     {
         
+    }    
+
+    private Vector3 GetClosestPositionToTargetUnit(Vector3 targetUnitPosition)
+    {
+        bool hasFoundValidPosition = false;
+
+        Vector3 newMovePosition = Vector3.zero;
+        Vector3 closestMovePosition = Vector3.zero;
+
+        Vector3 searchStartPoint = GetSearchStartPosition(targetUnitPosition);
+
+        for(int radius = 1; radius < m_unitView.UnitData.maxMovementDistancePerTurn;radius++)
+        {
+            int maxNumberOfChecks = radius * 4;
+
+            for (int i = 0; i < maxNumberOfChecks; i++)
+            {
+                float angle = i * Mathf.PI * 2f / maxNumberOfChecks;
+                Vector3 circlePosition = new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+
+                newMovePosition = searchStartPoint + circlePosition;
+               
+                if (IsValidMovementPosition(newMovePosition))
+                {
+                    if (closestMovePosition == Vector3.zero)
+                    {
+                        closestMovePosition = newMovePosition;
+                    }
+                    else
+                    {
+                       if(IsPositionCloser(newMovePosition, closestMovePosition))
+                            closestMovePosition = newMovePosition;
+                    }
+
+                    hasFoundValidPosition = true;
+                }
+            }
+
+            if (hasFoundValidPosition)
+                break;
+        }
+
+        return closestMovePosition;
     }
 
-    private Vector3 GetClosestPositionToTargetUnit(Vector3 targetPosition)
+    private bool IsPositionCloser(Vector3 newPositon, Vector3 oldPosition)
     {
-        int xBounds = 0;
-        int zBounds = 0;
+        float distanceToNewPosition = Vector3.Distance(transform.position, newPositon);
+        float distanceToOldPosition = Vector3.Distance(transform.position, oldPosition);
 
-        for (int i = 0; i < BoardManager.Rows * BoardManager.Columns;i++)
-        {           
-            xBounds++;
-            zBounds++;
-           
-            for (int z = zBounds; z > -zBounds; z--)
+        if (distanceToNewPosition < distanceToOldPosition)
+            return true;
+
+        return false;
+    }
+
+    private Vector3 GetSearchStartPosition(Vector3 targetUnitPosition)
+    {
+        Vector3 searchStartPosition = Vector3.zero;
+
+        //Check if Target is Within Range
+        if (IsThereAValidPathBetweenUnitAndTarget(targetUnitPosition) && IsTargetWithinMovementRange())
+        {
+            searchStartPosition = targetUnitPosition;
+        }
+        else
+        {
+            Vector3 targetVector = targetUnitPosition - transform.position;
+            targetVector.Normalize();
+            searchStartPosition = transform.position + (targetVector * m_unitView.UnitData.maxMovementDistancePerTurn);           
+        }
+
+        return searchStartPosition;
+
+    }
+
+    private bool IsValidMovementPosition(Vector3 targetPosition)
+    {
+        //Check We're On The Board
+        if (IsPositionWithinConfinesOfTheBoard(targetPosition))
+        {
+            //Check There's Nothing Already There
+            if (IsPositionClear(targetPosition))
             {
-                for (int x = xBounds; x > -xBounds; x--)
+                //Check There is A Valid NavMesh Path
+                if (IsThereAValidPathBetweenUnitAndTarget(targetPosition))
                 {
-                    Vector3 movePosition = new Vector3(targetPosition.x + x, 0, targetPosition.z + z);                                      
-
-                    //Check We're On The Board
-                    if (IsPositionWithinConfinesOfTheBoard(movePosition))
-                    {                        
-                        //Check There is A Valid Path
-                        if (IsThereAValidPathBetweenUnitAndTarget(movePosition))
-                        {
-                            //Check it's withing range
-                            if (IsTargetWithinMovementRange())
-                            {
-                                //Check There's Nothing Already There
-                                if (IsPositionClear(movePosition))
-                                {
-                                    //Check There
-                                    return movePosition;
-                                }
-                            }
-                        }                        
+                    //Check it's within range
+                    if (IsTargetWithinMovementRange())
+                    {
+                        return true;
                     }
                 }
             }
-        }       
+        } 
 
-        return Vector3.zero;
+        return false;
+    }
+
+    private bool IsNewPositionCloser(Vector3 oldmovePosition, Vector3 newMovePosition)
+    {
+        float distance = Vector3.Distance(transform.position, oldmovePosition);
+        float distance2 = Vector3.Distance(transform.position, newMovePosition);
+
+        if (distance2 < distance)
+        {
+            return true;
+        }
+
+        return false;
+          
     }
 
     private bool IsThereAValidPathBetweenUnitAndTarget(Vector3 targetPosition)
     {
         NavMesh.CalculatePath(transform.position, targetPosition, NavMesh.AllAreas, m_navPath);
 
-        if (m_navPath.status != NavMeshPathStatus.PathInvalid)
-        {
-            return true;
-        }
+        bool isValidPath = m_navPath.status == NavMeshPathStatus.PathInvalid ? false : true;
 
-        return false;
+        return isValidPath;
     }
 
     private bool IsTargetWithinMovementRange()
@@ -171,6 +226,8 @@ public class UnitAIMovementAction : UnitAIAction
 
     private void CheckUnitHasReachedTheirDestination()
     {
+        NavMesh.CalculatePath(transform.position, m_navAgent.destination, NavMesh.AllAreas, m_navPath);
+
         for (int i = 0; i < m_navPath.corners.Length - 1; i++)
         {
             Debug.DrawLine(m_navPath.corners[i], m_navPath.corners[i + 1], Color.red);
