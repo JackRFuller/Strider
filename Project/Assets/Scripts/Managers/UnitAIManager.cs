@@ -21,7 +21,7 @@ public class UnitAIManager : MonoBehaviour
     IEnumerator LateStart()
     {
         yield return new WaitForSeconds(3.0f);
-        InitiateTurn();
+        //InitiateTurn();
     }
 
     public void AddUnit(UnitView aiUnit)
@@ -29,7 +29,7 @@ public class UnitAIManager : MonoBehaviour
         m_aiUnits.Add(aiUnit);       
     }
 
-    void InitiateTurn()
+    public void InitiateTurn()
     {
         if(unitIndex < m_aiUnits.Count - 1)
         {

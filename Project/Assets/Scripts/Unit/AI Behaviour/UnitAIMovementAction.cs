@@ -12,6 +12,9 @@ public class UnitAIMovementAction : UnitAIAction
     private NavMeshAgent m_navAgent;
     private NavMeshPath m_navPath;
 
+    private const int m_searchRadius = 1;
+    private const int m_maxNumberOfChecks = 8;
+
     protected override void Start()
     {
         base.Start();
@@ -77,17 +80,15 @@ public class UnitAIMovementAction : UnitAIAction
         bool hasFoundValidPosition = false;
 
         Vector3 newMovePosition = Vector3.zero;
-        Vector3 closestMovePosition = Vector3.zero;
+        Vector3 closestMovePosition = Vector3.zero;        
 
-        Vector3 searchStartPoint = GetSearchStartPosition(targetUnitPosition);
-
-        for(int radius = 1; radius < m_unitView.UnitData.maxMovementDistancePerTurn;radius++)
+        for (int radius = 1; radius < m_unitView.UnitData.maxMovementDistancePerTurn; radius++)
         {
-            int maxNumberOfChecks = radius * 4;
-
-            for (int i = 0; i < maxNumberOfChecks; i++)
+            Vector3 searchStartPoint = GetSearchStartPosition(targetUnitPosition, radius);                     
+            
+            for (int i = 0; i < m_maxNumberOfChecks; i++)
             {
-                float angle = i * Mathf.PI * 2f / maxNumberOfChecks;
+                float angle = i * Mathf.PI * 2f / m_maxNumberOfChecks;
                 Vector3 circlePosition = new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
 
                 newMovePosition = searchStartPoint + circlePosition;
@@ -126,24 +127,19 @@ public class UnitAIMovementAction : UnitAIAction
         return false;
     }
 
-    private Vector3 GetSearchStartPosition(Vector3 targetUnitPosition)
+    private Vector3 GetSearchStartPosition(Vector3 targetUnitPosition, int radius)
     {
-        Vector3 searchStartPosition = Vector3.zero;
+        Vector3 searchStartPosition = targetUnitPosition;
 
         //Check if Target is Within Range
-        if (IsThereAValidPathBetweenUnitAndTarget(targetUnitPosition) && IsTargetWithinMovementRange())
-        {
-            searchStartPosition = targetUnitPosition;
-        }
-        else
+        if (!IsTargetWithinMovementRange(targetUnitPosition))
         {
             Vector3 targetVector = targetUnitPosition - transform.position;
             targetVector.Normalize();
-            searchStartPosition = transform.position + (targetVector * m_unitView.UnitData.maxMovementDistancePerTurn);           
-        }
+            searchStartPosition = transform.position + (targetVector * (m_unitView.UnitData.maxMovementDistancePerTurn - radius));           
+        }        
 
         return searchStartPosition;
-
     }
 
     private bool IsValidMovementPosition(Vector3 targetPosition)
@@ -158,14 +154,13 @@ public class UnitAIMovementAction : UnitAIAction
                 if (IsThereAValidPathBetweenUnitAndTarget(targetPosition))
                 {
                     //Check it's within range
-                    if (IsTargetWithinMovementRange())
+                    if (IsTargetWithinMovementRange(targetPosition))
                     {
                         return true;
                     }
                 }
             }
-        } 
-
+        }
         return false;
     }
 
@@ -192,9 +187,11 @@ public class UnitAIMovementAction : UnitAIAction
         return isValidPath;
     }
 
-    private bool IsTargetWithinMovementRange()
+    private bool IsTargetWithinMovementRange(Vector3 targetPosition)
     {
         float pathLength = 0;
+
+        NavMesh.CalculatePath(transform.position, targetPosition, NavMesh.AllAreas, m_navPath);
 
         for (int cornerIndex = 1; cornerIndex < m_navPath.corners.Length; cornerIndex++)
         {

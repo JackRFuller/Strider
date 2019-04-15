@@ -18,7 +18,7 @@ MonoBehaviour:
   defense: 3
   shootingSkill: 6
   unitBaseRadius: 0
-  maxMovementDistancePerTurn: 18
+  maxMovementDistancePerTurn: 100
   unitModel: {fileID: 1225176256878213597, guid: 7e6e119bc5019b849b770c05bfebf977,
     type: 3}
   viewRadius: 2
