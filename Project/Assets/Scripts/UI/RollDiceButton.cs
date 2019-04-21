@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RollDiceButton : MonoBehaviour
+public class RollDiceButton : UIButton
 {
-    private Button m_button;
-    private Image m_buttonImage;
+    [SerializeField] private Image m_diceIconImage;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        m_button = GetComponent<Button>();
-        m_buttonImage = GetComponent<Image>();
+        base.Start();
+
+        m_diceIconImage = GetComponentInChildren<Image>();
+
         m_button.onClick.AddListener(delegate { GameManager.Instance.DiceManager.RollDice(); });
 
         DisableButton();
@@ -21,16 +22,19 @@ public class RollDiceButton : MonoBehaviour
         GameManager.Instance.DiceManager.DiceEventEnded += DisableButton;
     }
 
-    private void DisableButton()
+    protected override void EnableButton()
     {
-        m_button.enabled = false;
-        m_buttonImage.enabled = false;
+        base.EnableButton();
+
+        m_diceIconImage.enabled = true;
     }
 
-    private void EnableButton()
+    protected override void DisableButton()
     {
-        m_button.enabled = true;
-        m_buttonImage.enabled = true;
+        base.DisableButton();
+
+        m_diceIconImage.enabled = false;
+
+        Debug.Log("Hit");
     }
-   
 }

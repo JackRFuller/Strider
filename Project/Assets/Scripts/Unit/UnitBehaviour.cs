@@ -22,7 +22,9 @@ public class UnitBehaviour : UnitComponent
 
     private void SetTurnAction()
     {
-        switch(TurnManager.GetTurnPhase)
+        m_hasActedThisTurn = false;
+
+        switch (TurnManager.GetTurnPhase)
         {
             case TurnManager.TurnPhase.Movement:
                 m_unitTurn = m_unitView.UnitMovement.StartUnitMovement;
@@ -55,7 +57,7 @@ public class UnitBehaviour : UnitComponent
 
     private void TurnEnacted()
     {
-        m_hasActedThisTurn = true;
+        m_hasActedThisTurn = true;      
 
         if (m_turnEnactedCallback != null)
             m_turnEnactedCallback.Invoke();

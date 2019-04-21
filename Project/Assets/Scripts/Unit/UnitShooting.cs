@@ -5,6 +5,10 @@ using System;
 
 public class UnitShooting : UnitComponent
 {
+    public Action UnitShootingStarted;
+    public Action UnitFired;
+    public Action UnitShootingFinished;
+
     private Action m_unitShootingComplete;
     private Action m_unitShootingCancelled;
 
@@ -54,8 +58,6 @@ public class UnitShooting : UnitComponent
 
     public void StartUnitShooting(Action unitShootingComplete, Action unitShootingCancelled)
     {
-        Debug.Log("Started Shooting");
-
         m_unitShootingComplete = unitShootingComplete;
         m_unitShootingCancelled = unitShootingCancelled;
 
@@ -67,6 +69,8 @@ public class UnitShooting : UnitComponent
 
         this.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
         this.enabled = true;
+
+        UnitShootingStarted.Invoke();
     }
 
     private void SearchForTarget()
@@ -108,9 +112,20 @@ public class UnitShooting : UnitComponent
                     }
                 }
             }
+
+            TurnUnitToFaceTarget(targetPosition);
         }
 
-        m_unitShootingGuide.SetShootingGuide(targetPosition, hasValidTarget, hasValidHitPoint);
+        m_unitShootingGuide.SetShootingGuide(transform.position,targetPosition, hasValidTarget, hasValidHitPoint);
+    }
+
+    private void TurnUnitToFaceTarget(Vector3 targetPosition)
+    {
+        if(targetPosition != Vector3.zero)
+        {
+            Vector3 lookAt = new Vector3(targetPosition.x, 0, targetPosition.z);
+            transform.LookAt(lookAt);
+        }
     }
 
     private void RecieveDiceResults(List<int> diceResults)
@@ -126,14 +141,17 @@ public class UnitShooting : UnitComponent
                     numberOfHits++;
                 }
             }
+
             if(numberOfHits > 0)
             {
                 DiceRollEvent diceRollEvent = new DiceRollEvent(m_playerCamera, numberOfHits, RecieveDiceResults);
                 GameManager.Instance.DiceManager.InitiateDiceEvent(diceRollEvent);
                 m_shootingPhase = ShootingPhase.ShootingToWound;
             }
-            else
+            else if(numberOfHits == 0)
             {
+                UnitShootingFinished.Invoke();
+
                 m_unitShootingComplete.Invoke();
                 m_unitShootingGuide.DisableShootingGuide();
             }
@@ -148,13 +166,16 @@ public class UnitShooting : UnitComponent
             {
                 if (diceResults[j] >= 0)
                 {
-                    Debug.Log("Wound!!");
                     numberOfWoundsCaused++;
                 }
             }
 
-            if (numberOfWoundsCaused > 0)
-                m_targetView.PhotonView.RPC("RemoveHealthPoints", PhotonTargets.All, numberOfWoundsCaused);
+            if (numberOfWoundsCaused > 0)            
+                m_targetView.UnitHealth.RemoveHealthPoints(numberOfWoundsCaused);
+            
+
+            if(UnitFired != null)
+                UnitFired.Invoke();           
 
             m_unitShootingComplete.Invoke();
             m_unitShootingGuide.DisableShootingGuide();
@@ -179,8 +200,6 @@ public class UnitShooting : UnitComponent
 
             if(Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
-                Debug.Log(hit.transform.name);
-
                 if(hit.transform == target)
                 {                  
                     return true;
@@ -203,7 +222,10 @@ public class UnitShooting : UnitComponent
             if (m_unitShootingCancelled != null)
                 m_unitShootingCancelled.Invoke();
 
+            this.gameObject.layer = LayerMask.NameToLayer("Unit");
             this.enabled = false;
+
+            UnitShootingFinished.Invoke();
             m_unitShootingGuide.DisableShootingGuide();
         }
     }

@@ -20,6 +20,8 @@ public class Dice : MonoBehaviour
 
     private void Start()
     {
+        this.enabled = false;
+
         m_photonView = GetComponent<PhotonView>();
         m_rigidBody = GetComponent<Rigidbody>();
         m_collider = GetComponent<Collider>();
@@ -27,15 +29,13 @@ public class Dice : MonoBehaviour
         m_diceMeshRenderer = GetComponentInChildren<MeshRenderer>();
         m_diceTransform = transform;
 
-        SetDiceMaterial();
+        //SetDiceMaterial();
         DisableDice();
-
-        this.enabled = false;
     }
 
     private void FixedUpdate()
     {
-        GetDiceValue();
+        //GetDiceValue();
     }   
 
     public void RollDice(Vector3 rollPosition, Action<int> diceManagerCallback)
@@ -44,7 +44,7 @@ public class Dice : MonoBehaviour
 
         transform.position = rollPosition;
 
-        m_photonView.RPC("EnableDice", PhotonTargets.All);
+        EnableDice();
 
         //Generate Random Speed
         m_rigidBody.AddForce(transform.right * UnityEngine.Random.Range(3, 12), ForceMode.Impulse);
@@ -55,7 +55,7 @@ public class Dice : MonoBehaviour
 
     private void GetDiceValue()
     {
-        if(m_rigidBody.velocity == Vector3.zero)
+        if (m_rigidBody.velocity == Vector3.zero)
         {
             int diceValue = ReturnRolledDiceValue();
             m_diceManagerCallback.Invoke(diceValue);
@@ -67,7 +67,14 @@ public class Dice : MonoBehaviour
     private IEnumerator WaitBeforeTryingToReturnDiceValue()
     {
         yield return new WaitForSeconds(0.5f);
-        this.enabled = true;
+        
+        while(m_rigidBody.velocity != Vector3.zero)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        GetDiceValue();
+
     }
 
     private int ReturnRolledDiceValue()
@@ -97,8 +104,7 @@ public class Dice : MonoBehaviour
             m_diceMeshRenderer.material = m_opponentDiceMaterial;
         }
     }
-
-    [PunRPC]
+   
     public void DisableDice()
     {
         m_collider.enabled = false;
@@ -107,8 +113,7 @@ public class Dice : MonoBehaviour
         m_rigidBody.angularVelocity = Vector3.zero;
         m_rigidBody.isKinematic = true;
     }
-
-    [PunRPC]
+   
     private void EnableDice()
     {
         m_collider.enabled = true;

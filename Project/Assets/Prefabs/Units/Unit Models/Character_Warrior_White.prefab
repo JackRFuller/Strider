@@ -434,7 +434,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5126861585434016392}
-  - component: {fileID: 5254935947657738678}
+  - component: {fileID: 2039599420491484872}
   m_Layer: 0
   m_Name: Character_Warrior_White
   m_TagString: Untagged
@@ -458,7 +458,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &5254935947657738678
+--- !u!95 &2039599420491484872
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
@@ -468,10 +468,10 @@ Animator:
   m_GameObject: {fileID: 1225176256878213597}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: fd7d68a65822e4a44a9ef78850e64cfc, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: 1fcb63274fb57f94abdb9271c515d210, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1

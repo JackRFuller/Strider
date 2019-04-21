@@ -5,10 +5,14 @@ using System;
 
 public class DiceManager : MonoBehaviour
 {
+    [SerializeField] private GameObject m_dicePrefab;
+
     public Action DiceEventSetup;
     public Action DiceEventEnded;
 
     private Camera m_playerCamera;
+
+    
 
     private List<Dice> m_dice;
     private List<int> m_diceRollResults;
@@ -17,22 +21,16 @@ public class DiceManager : MonoBehaviour
 
     private void Start()
     {
+        PoolDice();
+    }
+
+    private void PoolDice()
+    {
         m_dice = new List<Dice>();
 
-        StartCoroutine(LateSpawnIn());
-    }
-
-    IEnumerator LateSpawnIn()
-    {
-        yield return new WaitForSeconds(2.0f);
-        SpawnInDice();
-    }
-
-    private void SpawnInDice()
-    {
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
-            GameObject dicePrefab = PhotonNetwork.Instantiate("Dice", Vector3.zero, Quaternion.identity,0);
+            GameObject dicePrefab = Instantiate(m_dicePrefab, Vector3.zero, Quaternion.identity);
             Dice diceScript = dicePrefab.GetComponent<Dice>();
             m_dice.Add(diceScript);
         }
@@ -91,7 +89,7 @@ public class DiceManager : MonoBehaviour
             //Disable Dice
             for (int i = 0; i < m_diceUsedDuringEvent.Count; i++)
             {
-                m_diceUsedDuringEvent[i].PhotonView.RPC("DisableDice", PhotonTargets.All);
+                m_diceUsedDuringEvent[i].DisableDice();
             }
 
             m_diceRollEvent.diceRollEventCallback.Invoke(m_diceRollResults);           

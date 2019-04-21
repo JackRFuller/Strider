@@ -15,7 +15,10 @@ public class UnitAIManager : MonoBehaviour
     {
         m_unitTurnFinished = InitiateTurn;
 
-        StartCoroutine(LateStart());
+        GameManager.Instance.TurnManager.TurnPhaseUpdated += InitiateTurn;
+
+
+        //StartCoroutine(LateStart());
     }
 
     IEnumerator LateStart()
@@ -31,10 +34,21 @@ public class UnitAIManager : MonoBehaviour
 
     void InitiateTurn()
     {
-        if(unitIndex < m_aiUnits.Count - 1)
+        if(TurnManager.GetTurnPhase == TurnManager.TurnPhase.Movement || TurnManager.GetTurnPhase == TurnManager.TurnPhase.Shooting)
         {
-            unitIndex++;
-            m_aiUnits[unitIndex].UnitAIBehaviour.StartTurnAction(m_unitTurnFinished);
+            if(!GameManager.Instance.TurnManager.IsPlayersTurn())
+            {
+                if (unitIndex < m_aiUnits.Count - 1)
+                {
+                    unitIndex++;
+                    m_aiUnits[unitIndex].UnitAIBehaviour.StartTurnAction(m_unitTurnFinished);
+                }
+                else if(unitIndex == m_aiUnits.Count - 1)
+                {
+                    GameManager.Instance.TurnManager.EndTurn();
+                    unitIndex = 0;
+                }
+            }
         }
     }
        

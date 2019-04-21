@@ -48,8 +48,7 @@ public class UnitMovement : UnitComponent
         m_originalPosition = transform.position;
         
         gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-
-        m_unitMovementGuide.EnableMovementGuide();
+        
         m_unitCollider.enabled = false;
         Cursor.visible = false;
         this.enabled = true;
@@ -129,7 +128,6 @@ public class UnitMovement : UnitComponent
             if (hitColliders[i].gameObject.name != "Ground")
             {
                 isObjectInTheWay = false;
-                Debug.Log("Hit " + hitColliders[i].gameObject.name);
                 break;
             }            
         }
@@ -166,6 +164,8 @@ public class UnitMovement : UnitComponent
 
     private void ResetUnitAfterCancelledOrCompletedMove()
     {
+        this.enabled = false;
+
         GameManager.Instance.UnitManager.UnitStoppedMoving();
 
         m_unitMovementGuide.DisableMovementGuide();
@@ -173,6 +173,6 @@ public class UnitMovement : UnitComponent
 
         m_unitCollider.enabled = true;
         Cursor.visible = true;
-        this.enabled = false;
+        
     }
 }

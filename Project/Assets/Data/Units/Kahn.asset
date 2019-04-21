@@ -16,11 +16,13 @@ MonoBehaviour:
   healthPoints: 1
   strength: 3
   defense: 3
-  shootingSkill: 6
+  shootingSkill: 3
   unitBaseRadius: 0
   maxMovementDistancePerTurn: 100
   unitModel: {fileID: 9195203730724412503, guid: ff1a766550bb8f545a66fb2220614604,
     type: 3}
+  unitAnimator: {fileID: 9100000, guid: 1fcb63274fb57f94abdb9271c515d210, type: 2}
+  unitAvatar: {fileID: 9000000, guid: fd7d68a65822e4a44a9ef78850e64cfc, type: 3}
   viewRadius: 2
   viewAngle: 360
   fieldOfViewMaterial: {fileID: 2100000, guid: 843cdf2d4c9683148adbbcba4b24eccc, type: 2}

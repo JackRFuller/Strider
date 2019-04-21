@@ -22,6 +22,10 @@ public class UnitData : ScriptableObject
     [Header("Unit Model")]
     public GameObject unitModel;
 
+    [Header("Animation Attributes")]
+    public RuntimeAnimatorController unitAnimator;
+    public Avatar unitAvatar;
+
     [Header("Field of View")]
     public float viewRadius;
     [Range(0,361)]

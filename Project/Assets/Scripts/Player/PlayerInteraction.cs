@@ -51,7 +51,7 @@ public class PlayerInteraction : PlayerComponent
         m_selectedUnitTransform = unit.transform;
         m_selectedUnitView = m_selectedUnitTransform.GetComponent<UnitView>();
 
-        if(!m_selectedUnitView.CompareTag("EnemyUnit"))
+        if(m_selectedUnitView.TeamID == 1)
         {
             m_selectedUnitView.UnitBehaviour.TurnAction(m_playerView, CancelSelection, CancelSelection);
 

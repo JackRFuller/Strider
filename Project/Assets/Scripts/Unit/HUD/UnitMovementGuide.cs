@@ -37,6 +37,12 @@ public class UnitMovementGuide : MonoBehaviour
 
     public void DisableMovementGuide()
     {
+        StartCoroutine(WaitToTurnOffMovementGuide());
+    }
+
+    IEnumerator WaitToTurnOffMovementGuide()
+    {
+        yield return new WaitForEndOfFrame();
         m_lineRenderer.enabled = false;
 
         for (int spriteRenderer = 0; spriteRenderer < m_spriteRenderers.Length; spriteRenderer++)
@@ -76,7 +82,6 @@ public class UnitMovementGuide : MonoBehaviour
             m_spriteRenderers[spriteRenderer].color = (isValidPath && isValidSpot) ? Color.blue : Color.red;
         }
 
-        
-
+        EnableMovementGuide();
     }
 }

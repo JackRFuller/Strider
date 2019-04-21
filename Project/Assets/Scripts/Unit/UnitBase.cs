@@ -18,7 +18,7 @@ public class UnitBase : UnitComponent
 
     private void SetBaseColour()
     {
-        if (!m_unitView.PhotonView.isMine)
+        if (m_unitView.TeamID != 1)
             m_unitBase.material = m_enemyBaseMaterial;
     }
 

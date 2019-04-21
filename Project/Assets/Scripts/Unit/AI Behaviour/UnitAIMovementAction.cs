@@ -6,8 +6,7 @@ using System;
 
 public class UnitAIMovementAction : UnitAIAction
 {
-    private UnitView m_targetUnit;
-    
+    private UnitView m_targetUnit;    
 
     private NavMeshAgent m_navAgent;
     private NavMeshPath m_navPath;
@@ -26,7 +25,6 @@ public class UnitAIMovementAction : UnitAIAction
     {
         CheckUnitHasReachedTheirDestination();
     }
-
 
     public override void DoAction(Action turnFinished)
     {
@@ -243,6 +241,8 @@ public class UnitAIMovementAction : UnitAIAction
 
                     if (m_actionFinished != null)
                         m_actionFinished.Invoke();
+
+
 
                     this.enabled = false;
                 }

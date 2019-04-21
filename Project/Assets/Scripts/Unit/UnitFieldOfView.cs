@@ -67,10 +67,10 @@ public class UnitFieldOfView : UnitComponent
                 if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, m_obstacleMask))
                 {
                     UnitView unit = targetsInViewRadius[i].GetComponent<UnitView>();
-                    
-                    if(!unit.PhotonView.isMine)
+
+                    if(unit.TeamID != m_unitView.TeamID)
                     {
-                        enemies.Add(unit);                        
+                        enemies.Add(unit);
                     }
                 }
             }
@@ -79,7 +79,7 @@ public class UnitFieldOfView : UnitComponent
         //Send Combat Encounter To Combat Manager
         if(enemies.Count != 0)
         {
-            GameManager.Instance.CombatManager.CreateCombatEncounter(m_unitView, enemies);
+            GameManager.Instance.CombatManager.SetupCombatEncounter(enemies,m_unitView);
         }
     }
 
